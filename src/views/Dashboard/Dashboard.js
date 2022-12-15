@@ -530,7 +530,7 @@ const Boardroom = () => {
 
             </Box>
 
-            <Box mt={0}>
+            <Box mt={2}>
 
 
                 <Grid container justify="center">
@@ -775,7 +775,7 @@ const Boardroom = () => {
 
 
             </Box>
-            <Box >
+            <Box mt={2} >
 
 
                 <Grid container justify="center">
