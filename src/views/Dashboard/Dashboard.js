@@ -2,7 +2,7 @@
 import { useWallet } from 'use-wallet';
 import moment from 'moment';
 import styled from 'styled-components';
-
+import Bank from '../Bank';
 import { makeStyles } from '@material-ui/core/styles';
 import useBombStats from '../../hooks/useBombStats';
 import usebShareStats from '../../hooks/usebShareStats';
@@ -34,10 +34,13 @@ import useBombFinance from '../../hooks/useBombFinance';
 import useStakedTokenPriceInDollars from '../../hooks/useStakedTokenPriceInDollars';
 import Label from '../../components/Label';
 import useEarningsOnBoardroom from '../../hooks/useEarningsOnBoardroom';
+import useStatsForPool from '../../hooks/useStatsForPool';
+import useBank from '../../hooks/useBank';
+import { useParams } from 'react-router-dom';
 
 
 import HomeImage from '../../assets/img/background.jpg';
-import 'bootstrap/dist/css/bootstrap.min.css';
+
 const BackgroundImage = createGlobalStyle`
   body {
     background: url(${HomeImage}) repeat !important;
@@ -80,7 +83,17 @@ const Boardroom = () => {
    
     const { to } = useTreasuryAllocationTimes();
 
+
+    const  bankId = "BombBtcbLPBShareRewardPool"
+    const bankId2 = "BshareBnbLPBShareRewardPool"
+   
+    const bank = useBank(bankId);
+    const bank2 = useBank(bankId2);
     
+    const statsOnPool = useStatsForPool(bank);
+    const statsOnPool2 = useStatsForPool(bank2);
+
+
     const bombFinance = useBombFinance();
     const stakedTokenPriceInDollars = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
     const tokenPriceInDollars = useMemo(
@@ -233,7 +246,7 @@ const Boardroom = () => {
 
                 <Grid container justify="center">
                    
-                    <Box mt={3} style={{ width: '50%' }}>
+                    <Box mt={3} style={{ width: '55%' }}>
                     
                             
                      
@@ -243,31 +256,31 @@ const Boardroom = () => {
 
                        
                         
-                        <Card style={{ height: "270px" }} >
+                        <Card style={{ height: "280px" }} >
                             <CardContent >
                                 <Grid container justify="center" spacing={1}>
                                     <Grid item >
                                         <Card>
                                             <CardContent align="center">
-                                                <StyledCardsWrapper mt={1}> <h5 >Chat on Discord</h5></StyledCardsWrapper>
+                                                <StyledCardsWrapper mt={1}> <h4 >Chat on Discord</h4></StyledCardsWrapper>
                                             </CardContent>
                                         </Card>
                                     </Grid>
                                     <Grid item  >
                                         <Card >
                                             <CardContent align="center">
-                                                <StyledCardsWrapper mt={1}> <h5 >Read Docs</h5></StyledCardsWrapper>
+                                                <StyledCardsWrapper mt={1}> <h4 >Read Docs</h4></StyledCardsWrapper>
 
                                             </CardContent>
                                         </Card>
                                     </Grid>
                                 </Grid>
-                                <Grid container justify="center" spacing={1}>
-                                    <Grid item >
+                                <Grid container  spacing={1}>
+                                    <Grid item  >
                                         <h3>Boardroom</h3>
                                         <h7>Stake BSHARE and earn BOMB every EPOCH </h7>
                                     </Grid>
-                                    <Grid item align="center" >
+                                    <Grid style={{ marginLeft: "80px" }} item align="center" >
                                         <h3>Total Stacked</h3>
                                         <h7> {getDisplayBalance(totalStaked)}</h7>
                                     </Grid>
@@ -280,7 +293,7 @@ const Boardroom = () => {
                                     <Grid item >
                                         <Card>
                                             <CardContent align="center">
-                                                <h5>Daily Return</h5>
+                                                <h3>Daily Return</h3>
                                                 <Typography>{boardroomAPR.toFixed(2)}%</Typography>
                                             </CardContent>
                                         </Card>
@@ -378,7 +391,7 @@ const Boardroom = () => {
                             </Box>
                         
                     <Box mt={3} mr={1} style={{ width: '30%',height:"320px" }}>
-                        <Alert style={{ height: "270px" }} variant="filled" severity="info">
+                        <Alert style={{ height: "280px" }} variant="filled" severity="info">
                             <h2>Latest News </h2>
                            
                         </Alert>
@@ -432,8 +445,8 @@ const Boardroom = () => {
                                     <Grid item >
                                         <Card>
                                             <CardContent align="center">
-                                                <h5>Daily Return</h5>
-                                                <Typography>{boardroomAPR.toFixed(2)}%</Typography>
+                                                <h3>Daily Return</h3>
+                                                <Typography>{statsOnPool?.dailyAPR}%</Typography>
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -520,7 +533,7 @@ const Boardroom = () => {
                                 <Grid mt={6} container spacing={1}>
                                     <Grid item >
                                         <h4>BSHARE-BNB</h4>
-                                       
+                                        
                                     </Grid>
 
 
@@ -531,8 +544,8 @@ const Boardroom = () => {
                                     <Grid item >
                                         <Card>
                                             <CardContent align="center">
-                                                <h5>Daily Return</h5>
-                                                <Typography>{boardroomAPR.toFixed(2)}%</Typography>
+                                                <h3>Daily Return</h3>
+                                                <Typography>{statsOnPool2?.dailyAPR}%</Typography>
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -615,6 +628,7 @@ const Boardroom = () => {
                             </CardContent>
                         </Card>
                     </Box>
+                  
 
                    
 
