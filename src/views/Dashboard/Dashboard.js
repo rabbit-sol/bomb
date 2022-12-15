@@ -482,7 +482,7 @@ const Boardroom = () => {
                                                             <Button
                                                                 disabled={stakedBalance.eq(0) || ( !canClaimReward)}
                                                             onClick={onRedeem}
-                                                            
+                                                            style={{ marginTop: '20px' }}
                                                                 className={
                                                                     stakedBalance.eq(0) || ( !canClaimReward)
                                                                         ? 'shinyButtonDisabledSecondary'
@@ -494,7 +494,7 @@ const Boardroom = () => {
                                                         <Button
                                                             disabled={stakedBalance.eq(0) || (!canWithdraw)}
                                                             onClick={onRedeem}
-                                                           
+                                                            style={{ marginTop: '20px' }}
                                                             className={
                                                                 stakedBalance.eq(0) || (!canWithdraw)
                                                                     ? 'shinyButtonDisabledSecondary'
