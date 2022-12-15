@@ -607,13 +607,13 @@ const Boardroom = () => {
                                                                 disabled={
                                                                     bank.closedForStaking ||
                                                                     approveStatus1 === ApprovalState.PENDING ||
-                                                                    approveStatus1 === ApprovalState.UNKNOWN
+                                                                   
                                                                 }
                                                                 onClick={approve1}
                                                                 className={
                                                                     bank.closedForStaking ||
-                                                                        approveStatus1 === ApprovalState.PENDING ||
-                                                                        approveStatus1 === ApprovalState.UNKNOWN
+                                                                        approveStatus1 === ApprovalState.PENDING 
+                                                                       
                                                                         ? 'shinyButtonDisabled'
                                                                         : 'shinyButton'
                                                                 }
