@@ -450,7 +450,7 @@ const Boardroom = () => {
                                                         <Button
                                                             disabled={approveStatus !== ApprovalState.NOT_APPROVED}
                                                             className={approveStatus === ApprovalState.NOT_APPROVED ? 'shinyButton' : 'shinyButtonDisabled'}
-                                                            style={{ marginTop: '0px' }}
+                                                            style={{ marginTop: '-20px' }}
                                                             onClick={approve}
                                                         >
                                                             Deposit BSHARE
@@ -482,7 +482,7 @@ const Boardroom = () => {
                                                             <Button
                                                                 disabled={stakedBalance.eq(0) || ( !canClaimReward)}
                                                             onClick={onRedeem}
-                                                            style={{ marginTop:"20px "}}
+                                                            
                                                                 className={
                                                                     stakedBalance.eq(0) || ( !canClaimReward)
                                                                         ? 'shinyButtonDisabledSecondary'
@@ -494,7 +494,7 @@ const Boardroom = () => {
                                                         <Button
                                                             disabled={stakedBalance.eq(0) || (!canWithdraw)}
                                                             onClick={onRedeem}
-                                                            style={{ marginTop: "20px " }}
+                                                           
                                                             className={
                                                                 stakedBalance.eq(0) || (!canWithdraw)
                                                                     ? 'shinyButtonDisabledSecondary'
@@ -519,7 +519,7 @@ const Boardroom = () => {
                             </Box>
                         
                     <Box style={{ width: '29%' }}>
-                        <Alert style={{ height: "305px" }} variant="filled" severity="info">
+                        <Alert style={{ height: "100%" }} variant="filled" severity="info">
                             <h2>Latest News </h2>
                            
                         </Alert>
