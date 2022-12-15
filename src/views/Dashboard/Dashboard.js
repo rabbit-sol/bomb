@@ -287,7 +287,7 @@ const Boardroom = () => {
             <Typography color="textPrimary" align="center" variant="h3" gutterBottom>
                 BOMB FINANCE SUMMARY
             </Typography>
-            <Grid container justify="center" spacing={3} >
+            <Grid container justify="center"  >
 
                 <Grid item sx={{ minWidth: 550 }} className={classes.gridItem}>
                     <Card className={classes.gridItem}>
@@ -374,7 +374,7 @@ const Boardroom = () => {
 
                 <Grid container justify="center">
                    
-                    <Box  style={{ width: '65%' }}>
+                    <Box  style={{ width: '71%' }}>
               
                         
                         <Card style={{ height: "100%" }} >
@@ -518,7 +518,7 @@ const Boardroom = () => {
                         </Card>
                             </Box>
                         
-                    <Box  mr={1} style={{ width: '25%',height:"320px" }}>
+                    <Box style={{ width: '29%' }}>
                         <Alert style={{ height: "305px" }} variant="filled" severity="info">
                             <h2>Latest News </h2>
                            
