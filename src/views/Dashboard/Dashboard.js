@@ -161,11 +161,11 @@ const Boardroom = () => {
             </Typography>
             <Grid container justify="center" spacing={3} >
 
-                <Grid item sx={{ minWidth: 650 }} className={classes.gridItem}>
+                <Grid item sx={{ minWidth: 550 }} className={classes.gridItem}>
                     <Card className={classes.gridItem}>
                         <CardContent style={{ textAlign: 'center' }}>
                             <TableContainer component={Paper}>
-                                <Table sx={{ minWidth: 650 }} size="small" aria-label="a dense table">
+                                <Table sx={{ minWidth: 550 }} size="small" aria-label="a dense table">
 
                                     <TableHead>
                                         <TableRow >
