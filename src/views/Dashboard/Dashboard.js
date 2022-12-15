@@ -289,7 +289,7 @@ const Boardroom = () => {
             </Typography>
             <Grid container justify="center"  >
 
-                <Grid item sx={{ minWidth: 550 }} className={classes.gridItem}>
+                <Grid item className={classes.gridItem}>
                     <Card className={classes.gridItem}>
                         <CardContent style={{ textAlign: 'center' }}>
                             <TableContainer component={Paper}>
