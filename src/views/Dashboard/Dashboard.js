@@ -256,7 +256,7 @@ const Boardroom = () => {
 
                        
                         
-                        <Card style={{ height: "280px" }} >
+                        <Card style={{ height: "100%" }} >
                             <CardContent >
                                 <Grid container justify="center" spacing={1}>
                                     <Grid item >
@@ -391,7 +391,7 @@ const Boardroom = () => {
                             </Box>
                         
                     <Box mt={3} mr={1} style={{ width: '30%',height:"320px" }}>
-                        <Alert style={{ height: "280px" }} variant="filled" severity="info">
+                        <Alert style={{ height: "270px" }} variant="filled" severity="info">
                             <h2>Latest News </h2>
                            
                         </Alert>
@@ -416,7 +416,7 @@ const Boardroom = () => {
 
                     <Box mt={1} style={{ width: '100%' }}>
 
-                       <Card style={{ height: "480px" }} >
+                       <Card style={{ height: "100%" }} >
                             <CardContent >
                                
                                 <Grid container spacing={1}>
