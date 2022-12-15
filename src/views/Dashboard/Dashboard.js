@@ -416,9 +416,11 @@ const Boardroom = () => {
 
 
                                 </Grid>
-                                <Grid mt={10} container spacing={1}>
+                                <Grid mt={10} style={{ marginTop: "30px " }} container spacing={1}>
                                     <Grid item >
-                                        <h4>BOMB-BTCB</h4>
+                                        <h4>BOMB-BTCB 
+
+                                        </h4>
                                        
                                     </Grid>
 
@@ -515,7 +517,7 @@ const Boardroom = () => {
                             <CardContent >
                                
                                
-                                <Grid mt={10} container spacing={1}>
+                                <Grid mt={6} container spacing={1}>
                                     <Grid item >
                                         <h4>BSHARE-BNB</h4>
                                        
