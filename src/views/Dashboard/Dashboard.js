@@ -403,15 +403,7 @@ const Boardroom = () => {
 
                     <Box mt={1} style={{ width: '100%' }}>
 
-
-
-
-
-
-
-
-
-                        <Card style={{ height: "270px" }} >
+                       <Card style={{ height: "480px" }} >
                             <CardContent >
                                
                                 <Grid container spacing={1}>
@@ -424,7 +416,16 @@ const Boardroom = () => {
 
 
                                 </Grid>
+                                <Grid mt={10} container spacing={1}>
+                                    <Grid item >
+                                        <h4>BOMB-BTCB</h4>
+                                       
+                                    </Grid>
 
+
+
+
+                                </Grid>
                                 <Grid container  spacing={1}>
                                     <Grid item >
                                         <Card>
@@ -460,40 +461,14 @@ const Boardroom = () => {
                                     <Grid item  >
                                         <Card >
                                             <CardContent align="center">
-                                                <Grid container justify="center" spacing={3} mb={10}>
-                                                    <Button
-                                                        disabled={stakedBalance.eq(0) || (!canClaimReward)}
-                                                        onClick={onRedeem}
-                                                        className={
-                                                            stakedBalance.eq(0) || (!canClaimReward)
-                                                                ? 'shinyButtonDisabledSecondary'
-                                                                : 'shinyButtonSecondary'
-                                                        }
-                                                    >
-                                                        Claim
-                                                    </Button>
-                                                    <Button
-                                                        disabled={stakedBalance.eq(0) || (!canWithdraw)}
-                                                        onClick={onRedeem}
-                                                        mt={4}
-                                                        className={
-                                                            stakedBalance.eq(0) || (!canWithdraw)
-                                                                ? 'shinyButtonSecondary'
-                                                                : 'shinyButtonSecondary'
-                                                        }
-                                                    >
-                                                        Withdraw
-                                                    </Button>
-
-
-                                                </Grid>
+                                            
                                                 {!!account && (
 
                                                     <Grid container justify="center" spacing={3} >
                                                         <Button
                                                             disabled={stakedBalance.eq(0) || (!canClaimReward)}
                                                             onClick={onRedeem}
-                                                            style={{ marginTop: "20px " }}
+                                                            style={{ marginRight: "15px " }}
                                                             className={
                                                                 stakedBalance.eq(0) || (!canClaimReward)
                                                                     ? 'shinyButtonDisabledSecondary'
@@ -502,7 +477,129 @@ const Boardroom = () => {
                                                         >
                                                             Claim
                                                         </Button>
+                                                        <Button
+                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
+                                                            onClick={onRedeem}
+                                                            style={{ marginRight: "15px " }}
+                                                            className={
+                                                                stakedBalance.eq(0) || (!canClaimReward)
+                                                                    ? 'shinyButtonDisabledSecondary'
+                                                                    : 'shinyButtonSecondary'
+                                                            }
+                                                        >
+                                                            Claim
+                                                        </Button>
+                                                        <Button
+                                                            disabled={stakedBalance.eq(0) || (!canWithdraw)}
+                                                            onClick={onRedeem}
+                                                            style={{ marginRight: "15px " }}
+                                                            className={
+                                                                stakedBalance.eq(0) || (!canWithdraw)
+                                                                    ? 'shinyButtonSecondary'
+                                                                    : 'shinyButtonSecondary'
+                                                            }
+                                                        >
+                                                            Withdraw
+                                                        </Button>
 
+                                                    </Grid>
+
+                                                )}
+
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+
+                                </Grid>
+                            </CardContent>
+                            <CardContent >
+                               
+                               
+                                <Grid mt={10} container spacing={1}>
+                                    <Grid item >
+                                        <h4>BSHARE-BNB</h4>
+                                       
+                                    </Grid>
+
+
+
+
+                                </Grid>
+                                <Grid container  spacing={1}>
+                                    <Grid item >
+                                        <Card>
+                                            <CardContent align="center">
+                                                <h5>Daily Return</h5>
+                                                <Typography>{boardroomAPR.toFixed(2)}%</Typography>
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item  >
+                                        <Card >
+                                            <CardContent align="center">
+                                                <Label text={'Your Stake'} variant="yellow" />
+                                                <Typography>{getDisplayBalance(stakedBalance)}</Typography>
+                                                <Typography>≈ ${tokenPriceInDollars}</Typography>
+
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item  >
+                                        <Card >
+                                            <CardContent align="center">
+                                                <Label text={'Earned'} variant="yellow" />
+                                                <Typography>{getDisplayBalance(earnings)}</Typography>
+                                                <Typography>≈ ${earnedInDollars}</Typography>
+
+
+
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+
+                                    <Grid item  >
+                                        <Card >
+                                            <CardContent align="center">
+                                            
+                                                {!!account && (
+
+                                                    <Grid container justify="center" spacing={3} >
+                                                        <Button
+                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
+                                                            onClick={onRedeem}
+                                                            style={{ marginRight: "15px " }}
+                                                            className={
+                                                                stakedBalance.eq(0) || (!canClaimReward)
+                                                                    ? 'shinyButtonDisabledSecondary'
+                                                                    : 'shinyButtonSecondary'
+                                                            }
+                                                        >
+                                                            Claim
+                                                        </Button>
+                                                        <Button
+                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
+                                                            onClick={onRedeem}
+                                                            style={{ marginRight: "15px " }}
+                                                            className={
+                                                                stakedBalance.eq(0) || (!canClaimReward)
+                                                                    ? 'shinyButtonDisabledSecondary'
+                                                                    : 'shinyButtonSecondary'
+                                                            }
+                                                        >
+                                                            Claim
+                                                        </Button>
+                                                        <Button
+                                                            disabled={stakedBalance.eq(0) || (!canWithdraw)}
+                                                            onClick={onRedeem}
+                                                            style={{ marginRight: "15px " }}
+                                                            className={
+                                                                stakedBalance.eq(0) || (!canWithdraw)
+                                                                    ? 'shinyButtonSecondary'
+                                                                    : 'shinyButtonSecondary'
+                                                            }
+                                                        >
+                                                            Withdraw
+                                                        </Button>
 
                                                     </Grid>
 
