@@ -52,6 +52,10 @@ import ExchangeCard from './components/ExchangeCard';
 import { useTransactionAdder } from '../../state/transactions/hooks';
 import { BOND_REDEEM_PRICE, BOND_REDEEM_PRICE_BN } from '../../bomb-finance/constants';
 import useCashPriceInLastTWAP from '../../hooks/useCashPriceInLastTWAP';
+import useStake from '../../hooks/useStake';
+import useWithdraw from '../../hooks/useWithdraw';
+
+
 
 import HomeImage from '../../assets/img/background.jpg';
 
@@ -93,7 +97,10 @@ const Boardroom = () => {
     const bombFinance = useBombFinance();
     const bondBalance = useTokenBalance(bombFinance?.BBOND);
     const addTransaction = useTransactionAdder();
-   
+
+
+
+
     const handleRedeemBonds = useCallback(
         async (amount) => {
             const tx = await bombFinance.redeemBonds(amount);
@@ -127,13 +134,20 @@ const Boardroom = () => {
     
 
     const stakedBalance1 = useStakedBalance(bank.contract, bank.poolId);
-    const stakedBalance2 = useStakedBalance((bank.contract, bank.poolId))
+    const stakedBalance2 = useStakedBalance((bank2.contract, bank2.poolId))
     const { onStake } = useStakeToBoardroom();
     const { onWithdraw } = useWithdrawFromBoardroom();
 
+    const { onStake1 } = useStake(bank)
+    const { onStake2 } = useStake(bank2)
+
+    const { onWithdraw1 } = useWithdraw(bank);
+    const { onWithdraw2 } = useWithdraw(bank2);
 
    
     const tokenBalance = useTokenBalance(bombFinance.BSHARE);
+    const tokenBalance1 = useTokenBalance(bank.depositToken);
+    const tokenBalance2= useTokenBalance(bank2.depositToken);
     const [approveStatus, approve] = useApprove(bombFinance.BSHARE, bombFinance.contracts.Boardroom.address);
     const [approveStatus1, approve1] = useApprove(bank.depositToken, bank.address);
     const [approveStatus2, approve2] = useApprove(bank2.depositToken, bank2.address);
@@ -215,52 +229,52 @@ const Boardroom = () => {
         />,
     );
 
-    const [onPresentDeposit2, onDismissDeposit2] = useModal(
+    const [onPresentDeposit1, onDismissDeposit1] = useModal(
         <DepositModal
-            max={tokenBalance}
+            max={tokenBalance1}
             decimals={bank.depositToken.decimal}
             onConfirm={(amount) => {
                 if (Number(amount) <= 0 || isNaN(Number(amount))) return;
-                onStake(amount);
-                onDismissDeposit2();
+                onStake1(amount);
+                onDismissDeposit1();
             }}
             tokenName={bank.depositTokenName}
+        />,
+    );
+    const [onPresentWithdraw1, onDismissWithdraw1] = useModal(
+        <WithdrawModal
+            max={stakedBalance1}
+            decimals={bank.depositToken.decimal}
+            onConfirm={(amount) => {
+                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+                onWithdraw1(amount);
+                onDismissWithdraw1();
+            }}
+            tokenName={bank.depositTokenName}
+        />,
+    );
+    const [onPresentDeposit2, onDismissDeposit2] = useModal(
+        <DepositModal
+            max={tokenBalance2}
+            decimals={bank2.depositToken.decimal}
+            onConfirm={(amount) => {
+                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+                onStake2(amount);
+                onDismissDeposit2();
+            }}
+            tokenName={bank2.depositTokenName}
         />,
     );
     const [onPresentWithdraw2, onDismissWithdraw2] = useModal(
         <WithdrawModal
-            max={stakedBalance}
-            decimals={bank.depositToken.decimal}
+            max={stakedBalance2}
+            decimals={bank2.depositToken.decimal}
             onConfirm={(amount) => {
                 if (Number(amount) <= 0 || isNaN(Number(amount))) return;
-                onWithdraw(amount);
+                onWithdraw2(amount);
                 onDismissWithdraw2();
             }}
-            tokenName={bank.depositTokenName}
-        />,
-    );
-    const [onPresentDeposit3, onDismissDeposit3] = useModal(
-        <DepositModal
-            max={tokenBalance}
-            decimals={bank.depositToken.decimal}
-            onConfirm={(amount) => {
-                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
-                onStake(amount);
-                onDismissDeposit3();
-            }}
-            tokenName={bank.depositTokenName}
-        />,
-    );
-    const [onPresentWithdraw3, onDismissWithdraw3] = useModal(
-        <WithdrawModal
-            max={stakedBalance}
-            decimals={bank.depositToken.decimal}
-            onConfirm={(amount) => {
-                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
-                onWithdraw(amount);
-                onDismissWithdraw3();
-            }}
-            tokenName={bank.depositTokenName}
+            tokenName={bank2.depositTokenName}
         />,
     );
 
@@ -610,7 +624,7 @@ const Boardroom = () => {
                                                         ) : (
                                                             <Button
                                                                 disabled={bank.closedForStaking}
-                                                                onClick={() => (bank.closedForStaking ? null : onPresentDeposit2())}
+                                                                onClick={() => (bank.closedForStaking ? null : onPresentDeposit1())}
                                                             style={{ marginLeft: "25px " }}
                                                                 className={'shinyButtonSecondary'}
                                                             >
@@ -624,7 +638,7 @@ const Boardroom = () => {
                                                    
                                                         <Button
                                                         disabled={bank.closedForStaking}
-                                                            onClick={() => (bank.closedForStaking ? null : onPresentWithdraw2())}
+                                                            onClick={() => (bank.closedForStaking ? null : onPresentWithdraw1())}
                                                         style={{ marginLeft: "25px " }}
                                                         className={ 'shinyButtonSecondary'  }
                                                     >
@@ -712,7 +726,7 @@ const Boardroom = () => {
                                                         ) : (
                                                             <Button
                                                                 disabled={bank2.closedForStaking}
-                                                                onClick={() => (bank2.closedForStaking ? null : onPresentDeposit3())}
+                                                                onClick={() => (bank2.closedForStaking ? null : onPresentDeposit2())}
                                                             style={{ marginLeft: "25px " }}
                                                                 className={'shinyButtonSecondary'}
                                                             >
@@ -727,7 +741,7 @@ const Boardroom = () => {
                                                         
                                                         <Button
                                                             disabled={bank2.closedForStaking}
-                                                            onClick={() => (bank2.closedForStaking ? null : onPresentWithdraw3())}
+                                                            onClick={() => (bank2.closedForStaking ? null : onPresentWithdraw2())}
                                                         style={{ marginLeft: "25px " }}
                                                             className={'shinyButtonSecondary'}
                                                         >
