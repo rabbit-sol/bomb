@@ -1,4 +1,4 @@
-﻿import React, { useMemo } from 'react';
+﻿import React, { useCallback, useMemo } from 'react';
 import { useWallet } from 'use-wallet';
 import moment from 'moment';
 import styled from 'styled-components';
@@ -16,6 +16,7 @@ import UnlockWallet from '../../components/UnlockWallet';
 import Page from '../../components/Page';
 
 import useRedeemOnBoardroom from '../../hooks/useRedeemOnBoardroom';
+import useTokenBalance from '../../hooks/useTokenBalance';
 import useStakedBalanceOnBoardroom from '../../hooks/useStakedBalanceOnBoardroom';
 import { getDisplayBalance } from '../../utils/formatBalance';
 import useCurrentEpoch from '../../hooks/useCurrentEpoch';
@@ -36,8 +37,21 @@ import Label from '../../components/Label';
 import useEarningsOnBoardroom from '../../hooks/useEarningsOnBoardroom';
 import useStatsForPool from '../../hooks/useStatsForPool';
 import useBank from '../../hooks/useBank';
-import { useParams } from 'react-router-dom';
-
+import useApprove, { ApprovalState } from '../../hooks/useApprove';
+import { AddIcon, RemoveIcon } from '../../components/icons';
+import IconButton from '../../components/IconButton';
+import useRedeem from '../../hooks/useRedeem';
+import useStakeToBoardroom from '../../hooks/useStakeToBoardroom';
+import useWithdrawFromBoardroom from '../../hooks/useWithdrawFromBoardroom';
+import useModal from '../../hooks/useModal';
+import DepositModal from './components/DepositModal';
+import WithdrawModal from './components/WithdrawModal';
+import ExchangeStat from './components/ExchangeStat';
+import useStakedBalance from '../../hooks/useStakedBalance';
+import ExchangeCard from './components/ExchangeCard';
+import { useTransactionAdder } from '../../state/transactions/hooks';
+import { BOND_REDEEM_PRICE, BOND_REDEEM_PRICE_BN } from '../../bomb-finance/constants';
+import useCashPriceInLastTWAP from '../../hooks/useCashPriceInLastTWAP';
 
 import HomeImage from '../../assets/img/background.jpg';
 
@@ -74,8 +88,25 @@ const Boardroom = () => {
     const { account } = useWallet();
     const { onRedeem } = useRedeemOnBoardroom();
     const stakedBalance = useStakedBalanceOnBoardroom();
+    const bondStat = useBondStats();
     const currentEpoch = useCurrentEpoch();
+    const bombFinance = useBombFinance();
+    const bondBalance = useTokenBalance(bombFinance?.BBOND);
+    const addTransaction = useTransactionAdder();
    
+    const handleRedeemBonds = useCallback(
+        async (amount) => {
+            const tx = await bombFinance.redeemBonds(amount);
+            addTransaction(tx, { summary: `Redeem ${amount} BBOND` });
+        },
+        [bombFinance, addTransaction],
+    );
+    const cashPrice = useCashPriceInLastTWAP();
+    const isBondRedeemable = useMemo(() => cashPrice.gt(BOND_REDEEM_PRICE_BN), [cashPrice]);
+
+
+
+    const canWithdrawFromBoardroom = useWithdrawCheck();
     const totalStaked = useTotalStakedOnBoardroom();
     const boardroomAPR = useFetchBoardroomAPR();
     const canClaimReward = useClaimRewardCheck();
@@ -93,8 +124,19 @@ const Boardroom = () => {
     const statsOnPool = useStatsForPool(bank);
     const statsOnPool2 = useStatsForPool(bank2);
 
+    
 
-    const bombFinance = useBombFinance();
+    const stakedBalance1 = useStakedBalance(bank.contract, bank.poolId);
+    const stakedBalance2 = useStakedBalance((bank.contract, bank.poolId))
+    const { onStake } = useStakeToBoardroom();
+    const { onWithdraw } = useWithdrawFromBoardroom();
+
+
+   
+    const tokenBalance = useTokenBalance(bombFinance.BSHARE);
+    const [approveStatus, approve] = useApprove(bombFinance.BSHARE, bombFinance.contracts.Boardroom.address);
+    const [approveStatus1, approve1] = useApprove(bank.depositToken, bank.address);
+    const [approveStatus2, approve2] = useApprove(bank2.depositToken, bank2.address);
     const stakedTokenPriceInDollars = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
     const tokenPriceInDollars = useMemo(
         () =>
@@ -150,6 +192,78 @@ const Boardroom = () => {
     );
     const tBondTotalSupply = useMemo(() => (tBondStats ? String(tBondStats.totalSupply) : null), [tBondStats]);
 
+
+    const [onPresentDeposit, onDismissDeposit] = useModal(
+        <DepositModal
+            max={tokenBalance}
+            onConfirm={(value) => {
+                onStake(value);
+                onDismissDeposit();
+            }}
+            tokenName={'BShare'}
+        />,
+    );
+
+    const [onPresentWithdraw, onDismissWithdraw] = useModal(
+        <WithdrawModal
+            max={stakedBalance}
+            onConfirm={(value) => {
+                onWithdraw(value);
+                onDismissWithdraw();
+            }}
+            tokenName={'BShare'}
+        />,
+    );
+
+    const [onPresentDeposit2, onDismissDeposit2] = useModal(
+        <DepositModal
+            max={tokenBalance}
+            decimals={bank.depositToken.decimal}
+            onConfirm={(amount) => {
+                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+                onStake(amount);
+                onDismissDeposit2();
+            }}
+            tokenName={bank.depositTokenName}
+        />,
+    );
+    const [onPresentWithdraw2, onDismissWithdraw2] = useModal(
+        <WithdrawModal
+            max={stakedBalance}
+            decimals={bank.depositToken.decimal}
+            onConfirm={(amount) => {
+                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+                onWithdraw(amount);
+                onDismissWithdraw2();
+            }}
+            tokenName={bank.depositTokenName}
+        />,
+    );
+    const [onPresentDeposit3, onDismissDeposit3] = useModal(
+        <DepositModal
+            max={tokenBalance}
+            decimals={bank.depositToken.decimal}
+            onConfirm={(amount) => {
+                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+                onStake(amount);
+                onDismissDeposit3();
+            }}
+            tokenName={bank.depositTokenName}
+        />,
+    );
+    const [onPresentWithdraw3, onDismissWithdraw3] = useModal(
+        <WithdrawModal
+            max={stakedBalance}
+            decimals={bank.depositToken.decimal}
+            onConfirm={(amount) => {
+                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+                onWithdraw(amount);
+                onDismissWithdraw3();
+            }}
+            tokenName={bank.depositTokenName}
+        />,
+    );
+
     return (
         <Page>
             <BackgroundImage />
@@ -173,7 +287,7 @@ const Boardroom = () => {
                                             <TableCell></TableCell>
                                             <TableCell  align="right">Current Supply</TableCell>
                                             <TableCell align="right">Total Supply</TableCell>
-                                            <TableCell align="right">Price</TableCell>
+                                            <TableCell align="center">Price</TableCell>
                                             <TableCell> </TableCell>
                                         </TableRow>
                                     </TableHead>
@@ -222,7 +336,7 @@ const Boardroom = () => {
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item sx={{ minWidth: 650 }} md={2} lg={2} className={classes.gridItem}>
+                <Grid item sx={{ minWidth: 650 }}  className={classes.gridItem}>
                    
                     <Card className={classes.gridItem}>
                         <CardContent style={{ textAlign: 'center' }}>
@@ -246,15 +360,8 @@ const Boardroom = () => {
 
                 <Grid container justify="center">
                    
-                    <Box mt={3} style={{ width: '55%' }}>
-                    
-                            
-                     
-                      
-
-                           
-
-                       
+                    <Box  style={{ width: '65%' }}>
+              
                         
                         <Card style={{ height: "100%" }} >
                             <CardContent >
@@ -324,33 +431,28 @@ const Boardroom = () => {
                                     <Grid item  >
                                         <Card >
                                             <CardContent align="center">                                             
-                                                <Grid container justify="center" spacing={3}  mb={10}>
-                                                    <Button
-                                                        disabled={stakedBalance.eq(0) || (!canClaimReward)}
-                                                        onClick={onRedeem}
-                                                        className={
-                                                            stakedBalance.eq(0) || (!canClaimReward)
-                                                                ? 'shinyButtonDisabledSecondary'
-                                                                : 'shinyButtonSecondary'
-                                                        }
-                                                    >
-                                                        Claim
-                                                    </Button>
-                                                    <Button
-                                                        disabled={stakedBalance.eq(0) || (!canWithdraw)}
-                                                        onClick={onRedeem}
-                                                        mt={4}
-                                                        className={
-                                                            stakedBalance.eq(0) || (!canWithdraw)
-                                                                ? 'shinyButtonSecondary'
-                                                                : 'shinyButtonSecondary'
-                                                        }
-                                                    >
-                                                        Withdraw
-                                                    </Button>
-
-
-                                                </Grid>
+                                                <StyledCardActions>
+                                                    {approveStatus !== ApprovalState.APPROVED ? (
+                                                        <Button
+                                                            disabled={approveStatus !== ApprovalState.NOT_APPROVED}
+                                                            className={approveStatus === ApprovalState.NOT_APPROVED ? 'shinyButton' : 'shinyButtonDisabled'}
+                                                            style={{ marginTop: '0px' }}
+                                                            onClick={approve}
+                                                        >
+                                                            Deposit BSHARE
+                                                        </Button>
+                                                    ) : (
+                                                        <>
+                                                            <IconButton disabled={!canWithdrawFromBoardroom} onClick={onPresentWithdraw}>
+                                                                <RemoveIcon color={!canWithdrawFromBoardroom ? '' : 'yellow'} />
+                                                            </IconButton>
+                                                            <StyledActionSpacer />
+                                                            <IconButton onClick={onPresentDeposit}>
+                                                                <AddIcon color={!canWithdrawFromBoardroom ? '' : 'yellow'} />
+                                                            </IconButton>
+                                                        </>
+                                                    )}
+                                                </StyledCardActions>
 
                                                 {!account && (
                                                 <Grid container justify="center" spacing={3} >
@@ -375,6 +477,18 @@ const Boardroom = () => {
                                                             >
                                                                 Claim
                                                         </Button>
+                                                        <Button
+                                                            disabled={stakedBalance.eq(0) || (!canWithdraw)}
+                                                            onClick={onRedeem}
+                                                            style={{ marginTop: "20px " }}
+                                                            className={
+                                                                stakedBalance.eq(0) || (!canWithdraw)
+                                                                    ? 'shinyButtonDisabledSecondary'
+                                                                    : 'shinyButtonSecondary'
+                                                            }
+                                                        >
+                                                            Withdraw
+                                                        </Button>
                                                        
                                                       
                                                         </Grid>
@@ -390,8 +504,8 @@ const Boardroom = () => {
                         </Card>
                             </Box>
                         
-                    <Box mt={3} mr={1} style={{ width: '30%',height:"320px" }}>
-                        <Alert style={{ height: "270px" }} variant="filled" severity="info">
+                    <Box  mr={1} style={{ width: '25%',height:"320px" }}>
+                        <Alert style={{ height: "305px" }} variant="filled" severity="info">
                             <h2>Latest News </h2>
                            
                         </Alert>
@@ -400,21 +514,14 @@ const Boardroom = () => {
                        
                 </Grid>
 
-               
-              
-               
-                   
-               
-
-    
             </Box>
 
-            <Box mt={1}>
+            <Box mt={0}>
 
 
                 <Grid container justify="center">
 
-                    <Box mt={1} style={{ width: '100%' }}>
+                    <Box  style={{ width: '100%' }}>
 
                        <Card style={{ height: "100%" }} >
                             <CardContent >
@@ -454,7 +561,7 @@ const Boardroom = () => {
                                         <Card >
                                             <CardContent align="center">
                                                 <Label text={'Your Stake'} variant="yellow" />
-                                                <Typography>{getDisplayBalance(stakedBalance)}</Typography>
+                                                <Typography>{getDisplayBalance(stakedBalance1)}</Typography>
                                                 <Typography>≈ ${tokenPriceInDollars}</Typography>
 
                                             </CardContent>
@@ -476,48 +583,54 @@ const Boardroom = () => {
                                     <Grid item  >
                                         <Card >
                                             <CardContent align="center">
-                                            
+
+
+
+                                              
+                                                   
+                                                        {approveStatus1 !== ApprovalState.APPROVED ? (
+                                                            <Button
+                                                                disabled={
+                                                                    bank.closedForStaking ||
+                                                                    approveStatus1 === ApprovalState.PENDING ||
+                                                                    approveStatus1 === ApprovalState.UNKNOWN
+                                                                }
+                                                                onClick={approve1}
+                                                                className={
+                                                                    bank.closedForStaking ||
+                                                                        approveStatus1 === ApprovalState.PENDING ||
+                                                                        approveStatus1 === ApprovalState.UNKNOWN
+                                                                        ? 'shinyButtonDisabled'
+                                                                        : 'shinyButton'
+                                                                }
+                                                               
+                                                            >
+                                                                {`Approve ${bank.depositTokenName}`}
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                disabled={bank.closedForStaking}
+                                                                onClick={() => (bank.closedForStaking ? null : onPresentDeposit2())}
+                                                            style={{ marginLeft: "25px " }}
+                                                                className={'shinyButtonSecondary'}
+                                                            >
+                                                                Deposit
+                                                            </Button>
+                                                        )}
+                                                    
+                                               
                                                 {!!account && (
-
-                                                    <Grid container justify="center" spacing={3} >
+                                                    
+                                                   
                                                         <Button
-                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
-                                                            onClick={onRedeem}
-                                                            style={{ marginRight: "15px " }}
-                                                            className={
-                                                                stakedBalance.eq(0) || (!canClaimReward)
-                                                                    ? 'shinyButtonDisabledSecondary'
-                                                                    : 'shinyButtonSecondary'
-                                                            }
-                                                        >
-                                                            Claim
+                                                        disabled={bank.closedForStaking}
+                                                            onClick={() => (bank.closedForStaking ? null : onPresentWithdraw2())}
+                                                        style={{ marginLeft: "25px " }}
+                                                        className={ 'shinyButtonSecondary'  }
+                                                    >
+                                                       Withdraw
                                                         </Button>
-                                                        <Button
-                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
-                                                            onClick={onRedeem}
-                                                            style={{ marginRight: "15px " }}
-                                                            className={
-                                                                stakedBalance.eq(0) || (!canClaimReward)
-                                                                    ? 'shinyButtonDisabledSecondary'
-                                                                    : 'shinyButtonSecondary'
-                                                            }
-                                                        >
-                                                            Claim
-                                                        </Button>
-                                                        <Button
-                                                            disabled={stakedBalance.eq(0) || (!canWithdraw)}
-                                                            onClick={onRedeem}
-                                                            style={{ marginRight: "15px " }}
-                                                            className={
-                                                                stakedBalance.eq(0) || (!canWithdraw)
-                                                                    ? 'shinyButtonSecondary'
-                                                                    : 'shinyButtonSecondary'
-                                                            }
-                                                        >
-                                                            Withdraw
-                                                        </Button>
-
-                                                    </Grid>
+                                                    
 
                                                 )}
 
@@ -553,7 +666,7 @@ const Boardroom = () => {
                                         <Card >
                                             <CardContent align="center">
                                                 <Label text={'Your Stake'} variant="yellow" />
-                                                <Typography>{getDisplayBalance(stakedBalance)}</Typography>
+                                                <Typography>{getDisplayBalance(stakedBalance2)}</Typography>
                                                 <Typography>≈ ${tokenPriceInDollars}</Typography>
 
                                             </CardContent>
@@ -575,48 +688,53 @@ const Boardroom = () => {
                                     <Grid item  >
                                         <Card >
                                             <CardContent align="center">
-                                            
+                                               
+                                                   
+                                                        {approveStatus2 !== ApprovalState.APPROVED ? (
+                                                            <Button
+                                                                disabled={
+                                                                    bank2.closedForStaking ||
+                                                                    approveStatus2 === ApprovalState.PENDING ||
+                                                                    approveStatus2 === ApprovalState.UNKNOWN
+                                                                }
+                                                                onClick={approve2}
+                                                                className={
+                                                                    bank2.closedForStaking ||
+                                                                        approveStatus2 === ApprovalState.PENDING ||
+                                                                        approveStatus2 === ApprovalState.UNKNOWN
+                                                                        ? 'shinyButtonDisabled'
+                                                                        : 'shinyButton'
+                                                                }
+                                                               
+                                                            >
+                                                                {`Approve ${bank2.depositTokenName}`}
+                                                            </Button>
+                                                        ) : (
+                                                            <Button
+                                                                disabled={bank2.closedForStaking}
+                                                                onClick={() => (bank2.closedForStaking ? null : onPresentDeposit3())}
+                                                            style={{ marginLeft: "25px " }}
+                                                                className={'shinyButtonSecondary'}
+                                                            >
+                                                                Deposit
+                                                            </Button>
+                                                        )}
+                                                    
+                                              
                                                 {!!account && (
 
-                                                    <Grid container justify="center" spacing={3} >
+                                                    
+                                                        
                                                         <Button
-                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
-                                                            onClick={onRedeem}
-                                                            style={{ marginRight: "15px " }}
-                                                            className={
-                                                                stakedBalance.eq(0) || (!canClaimReward)
-                                                                    ? 'shinyButtonDisabledSecondary'
-                                                                    : 'shinyButtonSecondary'
-                                                            }
-                                                        >
-                                                            Claim
-                                                        </Button>
-                                                        <Button
-                                                            disabled={stakedBalance.eq(0) || (!canClaimReward)}
-                                                            onClick={onRedeem}
-                                                            style={{ marginRight: "15px " }}
-                                                            className={
-                                                                stakedBalance.eq(0) || (!canClaimReward)
-                                                                    ? 'shinyButtonDisabledSecondary'
-                                                                    : 'shinyButtonSecondary'
-                                                            }
-                                                        >
-                                                            Claim
-                                                        </Button>
-                                                        <Button
-                                                            disabled={stakedBalance.eq(0) || (!canWithdraw)}
-                                                            onClick={onRedeem}
-                                                            style={{ marginRight: "15px " }}
-                                                            className={
-                                                                stakedBalance.eq(0) || (!canWithdraw)
-                                                                    ? 'shinyButtonSecondary'
-                                                                    : 'shinyButtonSecondary'
-                                                            }
+                                                            disabled={bank2.closedForStaking}
+                                                            onClick={() => (bank2.closedForStaking ? null : onPresentWithdraw3())}
+                                                        style={{ marginLeft: "25px " }}
+                                                            className={'shinyButtonSecondary'}
                                                         >
                                                             Withdraw
                                                         </Button>
 
-                                                    </Grid>
+                                                   
 
                                                 )}
 
@@ -643,6 +761,97 @@ const Boardroom = () => {
 
 
             </Box>
+            <Box >
+
+
+                <Grid container justify="center">
+
+                    <Box style={{ width: '100%' }}>
+
+
+                        <Card style={{ height: "100%" }} >
+                            <CardContent >
+                              
+                                <Grid container spacing={1}>
+                                    <Grid item  >
+                                        <h3>Bonds</h3>
+                                        <h7>BBOND can be purchased only on contraction periods, when TWAP of BOMB is below 1</h7>
+                                    </Grid>
+                                 
+
+                                </Grid>
+
+                                <Grid container justify="center" spacing={1}>
+                                    <Grid item >
+                                        <Card>
+                                            <CardContent align="center">
+                                                <ExchangeStat
+                                                    tokenName="10,000 BBOND"
+                                                    description="Current Price: (BOMB)^2"
+                                                    price={Number(bondStat?.tokenInFtm).toFixed(4) || '-'}
+                                                />
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                    <Grid item  >
+                                        <Card >
+                                            <CardContent align="center">
+                                                <Label text={'Avaible to redeem'} variant="yellow" />
+                                                <ExchangeCard
+                                                   
+                                                    fromToken={bombFinance.BBOND}
+                                                    fromTokenName="BBOND"
+                                                    toToken={bombFinance.BOMB}
+                                                    toTokenName="BOMB"
+                                                    priceDesc={`${getDisplayBalance(bondBalance)} BBOND Available in wallet`}
+                                                    onExchange={handleRedeemBonds}
+                                                    disabled={!bondStat || bondBalance.eq(0) || !isBondRedeemable}
+                                                    disabledDescription={!isBondRedeemable ? `Enabled when 10,000 BOMB > ${BOND_REDEEM_PRICE}BTC` : null}
+                                                />
+
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+                                
+
+                                    <Grid item  >
+                                        <Card >
+                                            <CardContent align="center">
+                                                <StyledCardActions>
+                                                    
+                                                </StyledCardActions>
+
+                                                {!account && (
+                                                    <Grid container justify="center" spacing={3} >
+
+                                                        <UnlockWallet style={{ marginTop: "20px " }}
+                                                            className="shinyButtonSecondary" />
+
+                                                    </Grid>
+                                                )}
+                                       
+
+                                            </CardContent>
+                                        </Card>
+                                    </Grid>
+
+                                </Grid>
+                            </CardContent>
+                        </Card>
+                    </Box>
+
+
+
+                </Grid>
+
+
+
+
+
+
+
+
+            </Box>
         </Page>
     );
 };
@@ -665,6 +874,17 @@ const StyledCardsWrapper = styled.div`
     flex-flow: column nowrap;
     align-items: center;
   }
+`;
+const StyledCardActions = styled.div`
+  display: flex;
+  justify-content: center;
+  margin-top: 28px;
+  width: 100%;
+`;
+
+const StyledActionSpacer = styled.div`
+  height: ${(props) => props.theme.spacing[4]}px;
+  width: ${(props) => props.theme.spacing[4]}px;
 `;
 
 
