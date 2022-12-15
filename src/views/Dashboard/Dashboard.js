@@ -606,7 +606,7 @@ const Boardroom = () => {
                                                             <Button
                                                                 disabled={
                                                                     bank.closedForStaking ||
-                                                                    approveStatus1 === ApprovalState.PENDING ||
+                                                                    approveStatus1 === ApprovalState.PENDING 
                                                                    
                                                                 }
                                                                 onClick={approve1}
