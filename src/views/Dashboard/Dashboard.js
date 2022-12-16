@@ -270,11 +270,9 @@ const Boardroom = () => {
 
     const [onPresentDeposit1, onDismissDeposit1] = useModal(
         <DepositModal
-            max={tokenBalance1}
-            decimals={bank.depositToken.decimal}
-            onConfirm={(amount) => {
-                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
-                onStake1(amount);
+            max={tokenBalance1}           
+            onConfirm={(value) => {               
+                onStake1(value);
                 onDismissDeposit1();
             }}
             tokenName={bank.depositTokenName}
@@ -284,9 +282,9 @@ const Boardroom = () => {
     const [onPresentWithdraw1, onDismissWithdraw1] = useModal(
         <WithdrawModal
             max={stakedBalance1}
-            decimals={bank.depositToken.decimal}
+          
             onConfirm={(amount) => {
-                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+               
                 onWithdraw1(amount);
                 onDismissWithdraw1();
             }}
@@ -296,9 +294,9 @@ const Boardroom = () => {
     const [onPresentDeposit2, onDismissDeposit2] = useModal(
         <DepositModal
             max={tokenBalance2}
-            decimals={bank2.depositToken.decimal}
+           
             onConfirm={(amount) => {
-                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+              
                 onStake2(amount);
                 onDismissDeposit2();
             }}
@@ -308,9 +306,9 @@ const Boardroom = () => {
     const [onPresentWithdraw2, onDismissWithdraw2] = useModal(
         <WithdrawModal
             max={stakedBalance2}
-            decimals={bank2.depositToken.decimal}
+          
             onConfirm={(amount) => {
-                if (Number(amount) <= 0 || isNaN(Number(amount))) return;
+              
                 onWithdraw2(amount);
                 onDismissWithdraw2();
             }}
