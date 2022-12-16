@@ -22,6 +22,8 @@ import { getDisplayBalance } from '../../utils/formatBalance';
 import useCurrentEpoch from '../../hooks/useCurrentEpoch';
 import useFetchBoardroomAPR from '../../hooks/useFetchBoardroomAPR';
 
+import useEarnings from '../../hooks/useEarnings';
+import useHarvest from '../../hooks/useHarvest';
 
 import useTreasuryAllocationTimes from '../../hooks/useTreasuryAllocationTimes';
 import useTotalStakedOnBoardroom from '../../hooks/useTotalStakedOnBoardroom';
@@ -58,6 +60,11 @@ import TokenSymbol from '../../components/TokenSymbol';
 import useBondsPurchasable from '../../hooks/useBondsPurchasable';
 import HomeImage from '../../assets/img/background.jpg';
 import MetamaskFox from '../../assets/img/metamask-fox.svg';
+
+import DepositModalBank from './components/DepositModalBank';
+import WithdrawModalBank from './components/WithdrawModalBank';
+
+
 const BackgroundImage = createGlobalStyle`
   body {
     background: url(${HomeImage}) repeat !important;
@@ -146,7 +153,7 @@ const Boardroom = () => {
     const { onStake } = useStakeToBoardroom();
     const { onWithdraw } = useWithdrawFromBoardroom();
 
-    const { onStake1 } = useStake(bank)
+    const { onStake1 } = useStake(bank )
     const { onStake2 } = useStake(bank2)
 
     const { onWithdraw1 } = useWithdraw(bank);
@@ -171,7 +178,10 @@ const Boardroom = () => {
 
     const bombStats = useBombStats();
     const earnings = useEarningsOnBoardroom();
-
+    const earnings1 = useEarnings(bank.contract, bank.earnTokenName, bank.poolId);
+    const { onReward1 } = useHarvest(bank);
+    const earnings2 = useEarnings(bank2.contract, bank2.earnTokenName, bank2.poolId);
+    const { onReward2 } = useHarvest(bank2);
 
 
 
@@ -269,9 +279,11 @@ const Boardroom = () => {
 
 
     const [onPresentDeposit1, onDismissDeposit1] = useModal(
-        <DepositModal
-            max={tokenBalance1}           
-            onConfirm={(value) => {               
+        <DepositModalBank
+            max={tokenBalance1}
+            decimals={bank.depositToken.decimal}
+            onConfirm={(value) => {
+                if (Number(value) <= 0 || isNaN(Number(value))) return;
                 onStake1(value);
                 onDismissDeposit1();
             }}
@@ -280,41 +292,42 @@ const Boardroom = () => {
     );
 
     const [onPresentWithdraw1, onDismissWithdraw1] = useModal(
-        <WithdrawModal
+        <WithdrawModalBank
             max={stakedBalance1}
-          
-            onConfirm={(amount) => {
-               
-                onWithdraw1(amount);
+            decimals={bank.depositToken.decimal}
+            onConfirm={(value) => {
+                if (Number(value) <= 0 || isNaN(Number(value))) return;
+                onWithdraw1(value);
                 onDismissWithdraw1();
             }}
             tokenName={bank.depositTokenName}
         />,
     );
     const [onPresentDeposit2, onDismissDeposit2] = useModal(
-        <DepositModal
+        <DepositModalBank
             max={tokenBalance2}
-           
-            onConfirm={(amount) => {
-              
-                onStake2(amount);
+            decimals={bank2.depositToken.decimal}
+            onConfirm={(value) => {
+                if (Number(value) <= 0 || isNaN(Number(value))) return;
+                onStake2(value);
                 onDismissDeposit2();
             }}
             tokenName={bank2.depositTokenName}
         />,
     );
     const [onPresentWithdraw2, onDismissWithdraw2] = useModal(
-        <WithdrawModal
+        <WithdrawModalBank
             max={stakedBalance2}
-          
-            onConfirm={(amount) => {
-              
-                onWithdraw2(amount);
+            decimals={bank2.depositToken.decimal}
+            onConfirm={(value) => {
+                if (Number(value) <= 0 || isNaN(Number(value))) return;
+                onWithdraw2(value);
                 onDismissWithdraw2();
             }}
             tokenName={bank2.depositTokenName}
         />,
     );
+
 
     return (
         <Page>
@@ -649,14 +662,23 @@ const Boardroom = () => {
 
 
                                                 {!!account && (
-                                                    <Button
-                                                       
-                                                        onClick={ onPresentWithdraw1}
-                                                        style={{ marginLeft: "25px " }}
-                                                        className={'shinyButtonSecondary'}
-                                                    >
-                                                        Withdraw
-                                                    </Button>
+                                                    <>
+                                                        <Button
+
+                                                            onClick={onPresentWithdraw1}
+                                                            style={{ marginLeft: "25px " }}
+                                                            className={'shinyButtonSecondary'}
+                                                        >
+                                                            Withdraw
+                                                        </Button>
+                                                        <Button onClick={onReward1}
+                                                            style={{ marginLeft: "25px " }}
+                                                            disabled={earnings1.eq(0)}
+                                                            className={earnings1.eq(0) ? 'shinyButtonDisabled' : 'shinyButton'}
+                                                        >
+                                                            Claim
+                                                        </Button>
+                                                    </>
                                                 )}
                                             </CardContent>
                                         </Card>
@@ -731,13 +753,22 @@ const Boardroom = () => {
                                                     </Button>
                                                 )}
                                                 {!!account && (
-                                                 <Button
-                                                        onClick={ onPresentWithdraw2}
+                                                    <>
+                                                    <Button
+                                                        onClick={onPresentWithdraw2}
                                                         style={{ marginLeft: "25px " }}
                                                         className={'shinyButtonSecondary'}
                                                     >
                                                         Withdraw
-                                                    </Button>
+                                                        </Button>
+                                                        <Button onClick={onReward2}
+                                                            style={{ marginLeft: "25px " }}
+                                                            disabled={earnings2.eq(0)}
+                                                            className={earnings2.eq(0) ? 'shinyButtonDisabled' : 'shinyButton'}
+                                                        >
+                                                            Claim
+                                                        </Button>
+                                                        </>
                                                 )}
 
                                             </CardContent>
@@ -830,19 +861,19 @@ const Boardroom = () => {
                                                     }
                                                     onExchange={handleBuyBonds}
                                                     disabled={!bondStat || isBondRedeemable}
-                                                    disabledDescription={ `BUY BBOND`}
+                                                    disabledDescription={`BUY BBOND`}
                                                 />
                                             </CardContent>
                                         </Card>
                                     </Grid>
 
 
-                                   
+
                                 </Grid>
                             </CardContent>
                         </Card>
                     </Box>
-               </Grid>
+                </Grid>
             </Box>
         </Page>
     );
