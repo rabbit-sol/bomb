@@ -7,10 +7,7 @@ import {Button, Card} from '@material-ui/core';
 // import Card from '../../../components/Card';
 import CardContent from '../../../components/CardContent';
 import useBombFinance from '../../../hooks/useBombFinance';
-import Label from '../../../components/Label';
-import TokenSymbol from '../../../components/TokenSymbol';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faArrowRight} from '@fortawesome/free-solid-svg-icons';
+
 import useModal from '../../../hooks/useModal';
 import ExchangeModal from './ExchangeModal';
 import ERC20 from '../../../bomb-finance/ERC20';

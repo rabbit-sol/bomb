@@ -90,6 +90,7 @@ const Boardroom = () => {
     const classes = useStyles();
     const { account } = useWallet();
     const { onRedeem } = useRedeemOnBoardroom();
+    
     const stakedBalance = useStakedBalanceOnBoardroom();
     const bondStat = useBondStats();
     const currentEpoch = useCurrentEpoch();
@@ -139,7 +140,8 @@ const Boardroom = () => {
     const statsOnPool = useStatsForPool(bank);
     const statsOnPool2 = useStatsForPool(bank2);
 
-
+    const { onRedeem1 } = useRedeem(bank);
+    const { onRedeem2 } = useRedeem(bank2);
 
     const stakedBalance1 = useStakedBalance(bank.contract, bank.poolId);
     const stakedBalance2 = useStakedBalance((bank2.contract, bank2.poolId))
@@ -156,9 +158,11 @@ const Boardroom = () => {
     const tokenBalance = useTokenBalance(bombFinance.BSHARE);
     const tokenBalance1 = useTokenBalance(bank.depositToken);
     const tokenBalance2 = useTokenBalance(bank2.depositToken);
+
     const [approveStatus, approve] = useApprove(bombFinance.BSHARE, bombFinance.contracts.Boardroom.address);
     const [approveStatus1, approve1] = useApprove(bank.depositToken, bank.address);
     const [approveStatus2, approve2] = useApprove(bank2.depositToken, bank2.address);
+
     const stakedTokenPriceInDollars = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
     const tokenPriceInDollars = useMemo(
         () =>
@@ -171,16 +175,8 @@ const Boardroom = () => {
 
     const bombStats = useBombStats();
     const earnings = useEarningsOnBoardroom();
-
-
-
-
-
-    const tokenPriceInDollar = useMemo(
-        () => (bombStats ? Number(bombStats.priceInDollars).toFixed(2) : null),
-        [bombStats],
-    );
-    const earnedInDollars = (Number(tokenPriceInDollar) * Number(getDisplayBalance(earnings))).toFixed(2);
+    
+    const earnedInDollars = (Number() * Number(getDisplayBalance(earnings))).toFixed(2);
 
 
 
@@ -590,7 +586,7 @@ const Boardroom = () => {
                                         <Card>
                                             <CardContent align="center">
                                                 <h3>Daily Return</h3>
-                                                <Typography>{statsOnPool?.dailyAPR}%</Typography>
+                                                <Typography>{bank.closedForStaking ? '0.00' : statsOnPool?.yearlyAPR}%</Typography>
                                             </CardContent>
                                         </Card>
                                     </Grid>
@@ -649,14 +645,11 @@ const Boardroom = () => {
 
 
                                                 {!!account && (
-                                                    <Button
-                                                        disabled={bank.closedForStaking}
-                                                        onClick={() => (bank.closedForStaking ? null : onPresentWithdraw1())}
-                                                        style={{ marginLeft: "25px " }}
-                                                        className={'shinyButtonSecondary'}
-                                                    >
-                                                        Withdraw
-                                                    </Button>
+                                                   
+                                                        <Button onClick={onRedeem1} className="shinyButtonSecondary">
+                                                            Claim &amp; Withdraw
+                                                        </Button>
+                                                    
                                                 )}
                                             </CardContent>
                                         </Card>
@@ -731,14 +724,11 @@ const Boardroom = () => {
                                                     </Button>
                                                 )}
                                                 {!!account && (
-                                                 <Button
-                                                        disabled={bank2.closedForStaking}
-                                                        onClick={() => (bank2.closedForStaking ? null : onPresentWithdraw2())}
-                                                        style={{ marginLeft: "25px " }}
-                                                        className={'shinyButtonSecondary'}
-                                                    >
-                                                        Withdraw
-                                                    </Button>
+                                                    
+                                                        <Button onClick={onRedeem2} className="shinyButtonSecondary">
+                                                            Claim &amp; Withdraw
+                                                        </Button>
+                                                   
                                                 )}
 
                                             </CardContent>
