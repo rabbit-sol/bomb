@@ -142,10 +142,9 @@ const Boardroom = () => {
 
     const bank = useBank(bankId);
     const bank2 = useBank(bankId2);
-
+  
     const statsOnPool = useStatsForPool(bank);
     const statsOnPool2 = useStatsForPool(bank2);
-
 
 
     const stakedBalance1 = useStakedBalance(bank.contract, bank.poolId);
@@ -153,12 +152,16 @@ const Boardroom = () => {
     const { onStake } = useStakeToBoardroom();
     const { onWithdraw } = useWithdrawFromBoardroom();
 
-    const { onStake1 } = useStake(bank )
-    const { onStake2 } = useStake(bank2)
+    const {onStake: onStake1 } = useStake(bank )
+    const {onStake: onStake2 } = useStake(bank2)
+    
+    const {onWithdraw:onWithdraw1} = useWithdraw(bank);
+    const {onWithdraw:onWithdraw2} = useWithdraw(bank2);
 
-    const { onWithdraw1 } = useWithdraw(bank);
-    const { onWithdraw2 } = useWithdraw(bank2);
+    const {onRedeem:onRedeem1} = useRedeem(bank);
+    const {onRedeem:onRedeem2} = useRedeem(bank2);
 
+ 
 
     const tokenBalance = useTokenBalance(bombFinance.BSHARE);
     const tokenBalance1 = useTokenBalance(bank.depositToken);
@@ -663,14 +666,6 @@ const Boardroom = () => {
 
                                                 {!!account && (
                                                     <>
-                                                        <Button
-
-                                                            onClick={onPresentWithdraw1}
-                                                            style={{ marginLeft: "25px " }}
-                                                            className={'shinyButtonSecondary'}
-                                                        >
-                                                            Withdraw
-                                                        </Button>
                                                         <Button onClick={onReward1}
                                                             style={{ marginLeft: "25px " }}
                                                             disabled={earnings1.eq(0)}
@@ -678,6 +673,10 @@ const Boardroom = () => {
                                                         >
                                                             Claim
                                                         </Button>
+                                                        <Button onClick={onRedeem1} style={{ marginLeft: "25px " }} className="shinyButtonSecondary">
+                                                            Claim &amp; Withdraw
+                                                        </Button>
+                                                       
                                                     </>
                                                 )}
                                             </CardContent>
@@ -754,19 +753,16 @@ const Boardroom = () => {
                                                 )}
                                                 {!!account && (
                                                     <>
-                                                    <Button
-                                                        onClick={onPresentWithdraw2}
-                                                        style={{ marginLeft: "25px " }}
-                                                        className={'shinyButtonSecondary'}
-                                                    >
-                                                        Withdraw
-                                                        </Button>
+                                                 
                                                         <Button onClick={onReward2}
                                                             style={{ marginLeft: "25px " }}
                                                             disabled={earnings2.eq(0)}
                                                             className={earnings2.eq(0) ? 'shinyButtonDisabled' : 'shinyButton'}
                                                         >
                                                             Claim
+                                                        </Button>
+                                                        <Button onClick={onRedeem2} style={{ marginLeft: "25px " }} className="shinyButtonSecondary">
+                                                            Claim &amp; Withdraw
                                                         </Button>
                                                         </>
                                                 )}
