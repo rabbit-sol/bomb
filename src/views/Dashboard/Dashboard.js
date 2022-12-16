@@ -831,6 +831,7 @@ const Boardroom = () => {
                                                     }
                                                     onExchange={handleBuyBonds}
                                                     disabled={!bondStat || isBondRedeemable}
+                                                    disabledDescription={ `BUY BBOND`}
                                                 />
                                             </CardContent>
                                         </Card>
