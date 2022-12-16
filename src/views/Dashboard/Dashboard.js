@@ -182,9 +182,9 @@ const Boardroom = () => {
     const bombStats = useBombStats();
     const earnings = useEarningsOnBoardroom();
     const earnings1 = useEarnings(bank.contract, bank.earnTokenName, bank.poolId);
-    const { onReward1 } = useHarvest(bank);
+    const {onReward: onReward1 } = useHarvest(bank);
     const earnings2 = useEarnings(bank2.contract, bank2.earnTokenName, bank2.poolId);
-    const { onReward2 } = useHarvest(bank2);
+    const {onReward: onReward2 } = useHarvest(bank2);
 
 
 
@@ -673,8 +673,8 @@ const Boardroom = () => {
                                                         >
                                                             Claim
                                                         </Button>
-                                                        <Button onClick={onRedeem1} style={{ marginLeft: "25px " }} className="shinyButtonSecondary">
-                                                            Claim &amp; Withdraw
+                                                        <Button onClick={onPresentWithdraw1} style={{ marginLeft: "25px " }} className="shinyButtonSecondary">
+                                                             Withdraw
                                                         </Button>
                                                        
                                                     </>
@@ -761,8 +761,8 @@ const Boardroom = () => {
                                                         >
                                                             Claim
                                                         </Button>
-                                                        <Button onClick={onRedeem2} style={{ marginLeft: "25px " }} className="shinyButtonSecondary">
-                                                            Claim &amp; Withdraw
+                                                        <Button onClick={onPresentWithdraw1} style={{ marginLeft: "25px " }} className="shinyButtonSecondary">
+                                                            Withdraw
                                                         </Button>
                                                         </>
                                                 )}
