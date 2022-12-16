@@ -37,8 +37,8 @@ const Bank: React.FC = () => {
 
   const {account} = useWallet();
   const { onRedeem } = useRedeem(bank);
-
-
+    console.log({bank})
+    console.log({ bankId })
    let statsOnPool = useStatsForPool(bank);
   // console.log(statsOnPool);
 
@@ -174,8 +174,7 @@ const LPTokenHelpText: React.FC<{bank: BankEntity}> = ({bank}) => {
     pairName = 'BUSM-BUSD pair';
     uniswapUrl = 'https://pancakeswap.finance/add/' + busmAddr + '/' + busdAddr;
  //   vaultUrl = 'https://www.bomb.farm/#/bsc/vault/bomb-bomb-btcb';
-  }
-    
+  }  
   else {
     pairName = 'BSHARE-BNB pair';
     uniswapUrl = 'https://pancakeswap.finance/add/BNB/' + bshareAddr;

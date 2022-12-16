@@ -35,7 +35,7 @@ interface StakeProps {
 }
 
 const Stake: React.FC<StakeProps> = ({ bank }) => {
-  console.log({bank})
+ 
   const [approveStatus, approve] = useApprove(bank.depositToken, bank.address);
 
   const {color: themeColor} = useContext(ThemeContext);
