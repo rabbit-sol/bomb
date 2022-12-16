@@ -107,12 +107,10 @@ const Boardroom = () => {
         },
         [bombFinance, addTransaction],
     );
-
     const cashPrice = useCashPriceInLastTWAP();
     const isBondRedeemable = useMemo(() => cashPrice.gt(BOND_REDEEM_PRICE_BN), [cashPrice]);
     const isBondPurchasable = useMemo(() => Number(bondStat?.tokenInFtm) < 1.01, [bondStat]);
     const bondsPurchasable = useBondsPurchasable();
-
     const handleBuyBonds = useCallback(
         async (amount) => {
             const tx = await bombFinance.buyBonds(amount);
@@ -137,16 +135,14 @@ const Boardroom = () => {
 
     const bank = useBank(bankId);
     const bank2 = useBank(bankId2);
-    console.log( bank )
-    console.log(bankId)
+
     const statsOnPool = useStatsForPool(bank);
     const statsOnPool2 = useStatsForPool(bank2);
 
-  
+
 
     const stakedBalance1 = useStakedBalance(bank.contract, bank.poolId);
     const stakedBalance2 = useStakedBalance(bank2.contract, bank2.poolId)
-    
     const { onStake } = useStakeToBoardroom();
     const { onWithdraw } = useWithdrawFromBoardroom();
 
@@ -156,17 +152,13 @@ const Boardroom = () => {
     const { onWithdraw1 } = useWithdraw(bank);
     const { onWithdraw2 } = useWithdraw(bank2);
 
-    const { onRedeem1 } = useRedeem(bank);
-    const { onRedeem2 } = useRedeem(bank2);
 
     const tokenBalance = useTokenBalance(bombFinance.BSHARE);
     const tokenBalance1 = useTokenBalance(bank.depositToken);
     const tokenBalance2 = useTokenBalance(bank2.depositToken);
-
     const [approveStatus, approve] = useApprove(bombFinance.BSHARE, bombFinance.contracts.Boardroom.address);
     const [approveStatus1, approve1] = useApprove(bank.depositToken, bank.address);
     const [approveStatus2, approve2] = useApprove(bank2.depositToken, bank2.address);
-
     const stakedTokenPriceInDollars = useStakedTokenPriceInDollars('BSHARE', bombFinance.BSHARE);
     const tokenPriceInDollars = useMemo(
         () =>
@@ -275,6 +267,7 @@ const Boardroom = () => {
         />,
     );
 
+
     const [onPresentDeposit1, onDismissDeposit1] = useModal(
         <DepositModal
             max={tokenBalance1}
@@ -287,6 +280,7 @@ const Boardroom = () => {
             tokenName={bank.depositTokenName}
         />,
     );
+
     const [onPresentWithdraw1, onDismissWithdraw1] = useModal(
         <WithdrawModal
             max={stakedBalance1}
@@ -657,8 +651,13 @@ const Boardroom = () => {
 
 
                                                 {!!account && (
-                                                    <Button style={{ marginLeft: "20px" }} onClick={onRedeem1} className="shinyButtonSecondary">
-                                                        Claim &amp; Withdraw
+                                                    <Button
+                                                       
+                                                        onClick={ onPresentWithdraw1}
+                                                        style={{ marginLeft: "25px " }}
+                                                        className={'shinyButtonSecondary'}
+                                                    >
+                                                        Withdraw
                                                     </Button>
                                                 )}
                                             </CardContent>
@@ -733,13 +732,15 @@ const Boardroom = () => {
                                                         Deposit
                                                     </Button>
                                                 )}
-                                               
-                                                    {!!account && (
-                                                    <Button style={{ marginLeft: "20px" }}  onClick={onRedeem2} className="shinyButtonSecondary">
-                                                    Claim &amp; Withdraw
-                                                </Button>
+                                                {!!account && (
+                                                 <Button
+                                                        onClick={ onPresentWithdraw2}
+                                                        style={{ marginLeft: "25px " }}
+                                                        className={'shinyButtonSecondary'}
+                                                    >
+                                                        Withdraw
+                                                    </Button>
                                                 )}
-                                               
 
                                             </CardContent>
                                         </Card>
