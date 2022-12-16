@@ -137,8 +137,8 @@ const Boardroom = () => {
 
     const bank = useBank(bankId);
     const bank2 = useBank(bankId2);
-    console.log({ bank })
-    console.log({ bankId })
+    console.log( bank )
+    console.log(bankId)
     const statsOnPool = useStatsForPool(bank);
     const statsOnPool2 = useStatsForPool(bank2);
 
